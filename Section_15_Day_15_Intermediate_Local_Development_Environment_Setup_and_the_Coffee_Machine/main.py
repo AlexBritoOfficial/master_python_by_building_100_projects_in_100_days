@@ -1,7 +1,3 @@
-""""
-Given the course outline of this Udemy course, the course has not yet reached a point where the instructor speaks on OOP, hence the reason no OOP
-"""
-
 MENU = {
     "espresso": {
         "ingredients": {
@@ -29,116 +25,135 @@ MENU = {
 }
 
 resources = {
-    "water": 300,
-    "coffee": 200,
-    "milk": 100,
+    "water": 1300,
+    "coffee": 1200,
+    "milk": 1100,
     "money": 0
+}
+
+COIN_VALUES = {
+    "quarter": 0.25,
+    "dime": 0.10,
+    "nickel": 0.05,
+    "penny": 0.01
 }
 
 if __name__ == "__main__":
 
-    # This flag is responsible for letting us know, if the drink was dispensed.
-    isDrinkDispensed: bool = False
-
-    # This flag is responsible for letting us know, if the drink was dispensed.
-    isResourcesEnough: bool = True
-
-    # This flag is responsible for letting us know, if the user has fully inserted their change.
-    isMoneyHanded: bool = False
-
-    userTotal: float = 0
-
-    userTotalDict: dict = {
-        "quarter": {
-            "count": 0
-        },
-        "dime": {
-            "count": 0
-        },
-        "nickel": {
-            "count": 0
-        },
-        "penny": {
-            "count": 0
-        }
-    }
+    isDrinkDispensed = False
 
     while not isDrinkDispensed:
-        userResponse = input("Would you like order a espresso/latte/cappuccino ? \n")
 
-        if userResponse.lower().strip() == "no":
-            isDrinkDispensed = True
+        # Reset flags and counters for each order
+        isResourcesEnough = True
+        isMoneyHanded = False
+        userTotalDict = {coin: 0 for coin in COIN_VALUES}
+        userTotal = 0.0
+
+        userResponse = input("Would you like to order an espresso/latte/cappuccino? \n").lower().strip()
+
+        if userResponse == "no":
             print("Thank you, have a nice day")
+            break
 
-        elif userResponse.lower().strip() == "off":
-            isDrinkDispensed = True
+        elif userResponse == "off":
             print("Machine shutting down")
+            break
 
-        elif userResponse.lower().strip() == "report":
+        elif userResponse == "report":
             for key, value in resources.items():
-                if key.lower().strip() == "milk" or key.lower().strip() == "water":
-                    print(f"{key}: {value}ml")
-
-                elif key.lower().strip() == "coffee":
-                    print(f"{key}: {value}g")
-
+                if key in ["milk", "water"]:
+                    print(f"{key.capitalize()}: {value}ml")
+                elif key == "coffee":
+                    print(f"{key.capitalize()}: {value}g")
                 else:
-                    print(f"{key}: ${value}")
+                    print(f"{key.capitalize()}: ${value}")
+            continue
 
-        elif userResponse.lower().strip() == "":
+        elif userResponse == "":
             print("Please enter something")
+            continue
 
-        else:
+        elif userResponse not in MENU:
+            print("Invalid selection. Please choose espresso, latte, or cappuccino.")
+            continue
 
-            """
-            Process coins.
-                
-                a.  If there are sufficient resources to make the drink selected, then the program should
-                    prompt the user to insert coins.
-                
-                b.  Remember that quarters = $0.25, dimes = $0.10, nickles = $0.05, pennies = $0.01
-                
-                c.  Calculate the monetary value of the coins inserted. E.g. 1 quarter, 2 dimes, 1 nickel, 2
-                    pennies = 0.25 + 0.1 x 2 + 0.05 + 0.01 x 2 = $0.52
-            """
-            for i, (key, value) in enumerate(MENU[userResponse]["ingredients"].items()):
+        # Check resources for the selected drink
+        for ingredient, required_amount in MENU[userResponse]["ingredients"].items():
+            if required_amount > resources.get(ingredient, 0):
+                print(f"Sorry, not enough {ingredient}.")
+                isResourcesEnough = False
 
-                if value <= resources[list(resources.keys())[i]]:
+        if not isResourcesEnough:
+            # Skip coin processing and take a new order
+            continue
+
+        cost = round(MENU[userResponse]["cost"], 2)
+        print(f"\nThe total for your {userResponse} comes out to ${cost}\n")
+
+        # Process coins
+        while not isMoneyHanded:
+
+            userMoney = input(
+                "Insert quarters, dimes, nickels, and pennies into machine\n"
+                "Please enter DONE when you are done inserting your coins.\n"
+            ).strip()
+
+            if userMoney.lower() == "done":
+
+                moneyInserted = sum(
+                    userTotalDict[coin] * COIN_VALUES[coin] for coin in userTotalDict
+                )
+                moneyInserted = round(moneyInserted, 2)
+                print(f"Money inserted: ${moneyInserted}")
+
+                if moneyInserted < cost:
+                    print(f"\nSorry that's not enough money. ${moneyInserted} has been refunded.")
+                    # Reset money counters for retry
+                    userTotalDict = {coin: 0 for coin in COIN_VALUES}
+                    userTotal = 0.0
+                    # Continue coin insertion loop
                     continue
+
                 else:
-                    isResourcesEnough = False
+                    change = round(moneyInserted - cost, 2)
+                    resources["money"] += cost
+                    print(f"Here is ${change} dollars in change.")
 
-            print(f"\nThe total for your {userResponse}, comes out to ${MENU[userResponse]["cost"]}\n")
+                    for ingredient in MENU[userResponse]["ingredients"]:
+                        resources[ingredient] -= MENU[userResponse]["ingredients"][ingredient]
 
-            while not isMoneyHanded:
+                    print(f"\nHere is your {userResponse} ☕️. Enjoy!\n")
 
-                userMoney = input(
-                    "Insert quarters, dimes, nickels, and pennies into machine \n"
-                    "\nPlease enter DONE, when you are done inserting your coins.\n")
-
-                if userMoney == "DONE".lower() or userMoney == "DONE".upper():
                     isMoneyHanded = True
+                    # After successful purchase, reset for next order (flags and counters)
+                    # Actually, loop will restart, so flags reset at top again
+                    break
 
-                elif userMoney == "" or float(userMoney) not in [0.25, 0.10, .05, .01]:
-                    print("Please only insert quarters, dimes, nickles, and pennies")
+            elif userMoney == "":
+                print("Please insert coins or type DONE.")
 
+            else:
+                try:
+                    coin = float(userMoney)
+                    if coin not in COIN_VALUES.values():
+                        print("Please only insert quarters, dimes, nickels, and pennies")
+                        continue
+                except ValueError:
+                    print("Invalid input.")
+                    continue
 
+                # Map coin value back to coin name
+                coin_name = None
+                for name, val in COIN_VALUES.items():
+                    if val == coin:
+                        coin_name = name
+                        break
+
+                if coin_name:
+                    userTotalDict[coin_name] += 1
+                    userTotal += coin
+                    print(f"\nTotal entered: ${round(userTotal, 2)}")
                 else:
+                    print("Coin not recognized. Please insert valid coins.")
 
-                    if float(userMoney) == .25:
-                        userTotalDict["quarter"]["count"] = userTotalDict["quarter"]["count"] + 1
-
-                    if float(userMoney) == .10:
-                        userTotalDict["dime"]["count"] = userTotalDict["dime"]["count"] + 1
-
-                    if float(userMoney) == .05:
-                        userTotalDict["nickel"]["count"] = userTotalDict["nickel"]["count"] + 1
-
-                    if float(userMoney) == .01:
-                        userTotalDict["penny"]["count"] = userTotalDict["penny"]["count"] + 1
-
-            """
-                    Calculate the monetary value of the coins inserted. E.g. 1 quarter, 2 dimes, 1 nickel, 2
-                    pennies = 0.25 + 0.1 x 2 + 0.05 + 0.01 x 2 = $0.52
-            """
-            print(userTotalDict)
