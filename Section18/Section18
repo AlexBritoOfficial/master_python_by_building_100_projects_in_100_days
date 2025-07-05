@@ -1,0 +1,56 @@
+def drawShape(n, c):
+    angle = 360 / n
+    for _ in range(n):
+        turtle.color(c)
+        turtle.forward(100)
+        turtle.right(angle)
+
+
+def random_color():
+    r = random.randint(0, 255)
+    g = random.randint(0, 255)
+    b = random.randint(0, 255)
+
+    return r, g, b
+
+
+def draw_spirograph(size_of_gap):
+    for i in range(int(360 / size_of_gap)):
+        turtle.color(random_color())
+        turtle.circle(radius=100)
+        turtle.setheading(turtle.heading() + 10)
+    ## turtle.pen()
+
+    """Drawing a Square"""
+    # turtle.speed(1)
+    # turtle.shape("turtle")
+    # turtle.color("blue")
+    # turtle.forward(100)
+    # turtle.right(90)
+    # turtle.down()
+    # turtle.forward(100)
+    # turtle.right(90)
+    # turtle.forward(100)
+    # turtle.right(90)
+    # turtle.forward(100)
+
+    """Drawing a Dashed Line"""
+    # for _ in range(15):
+    #     turtle.forward(10)
+    #     turtle.penup()
+    #     turtle.forward(10)
+    #     turtle.pendown()
+
+    """Drawing a Triangle, Square, Pentagon, Hexagon, Heptagon, Octagon, Nonagon, Decagon"""
+    # for i in range(3, 11):
+    #     drawShape(i,tk_colors[i])
+    # directions = [0, 90, 180, 270]
+
+    """Random Walk"""
+    # for i in range(1000):
+    #     turtle.pencolor(random_color())
+    #     turtle.width(20)
+    #     turtle.forward(30)
+    #     turtle.seth(random.choice(directions))
+
+    # turtle.speed("fastest")
