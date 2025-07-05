@@ -1,0 +1,13 @@
+1️⃣  Activate the virtual environment
+=> source .venv/bin/activate
+
+2️⃣ You’ll know it worked when your prompt shows:
+=> (.venv) alexbrito@Alexs-MacBook-Pro ...
+
+3️⃣ Install your package
+=> pip install [package_name]
+
+4️⃣ Run your Python scripts inside the virtual environment
+
+cd path/to/your/project
+source .venv/bin/activate
