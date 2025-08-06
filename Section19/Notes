@@ -1,0 +1,6 @@
+Higher Order Functions:
+    A function takes another function as arugment.
+    A function that returns another function.
+
+    When passing a function inside of another function, do not add the parenthesis of the child function
+    inside the parenthesis of the parent function, in other words the calling function.
