@@ -32,6 +32,7 @@ class Snake:
         self.segment_list.append(turtle)
 
     def move(self):
+        # Start at the
         for segment_num in range(len(self.segment_list) - 1, 0, -1):
             new_x = self.segment_list[segment_num - 1].xcor()
             new_y = self.segment_list[segment_num - 1].ycor()
